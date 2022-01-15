@@ -1,0 +1,193 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+
+<title>HTML5 Web Notifications Test - Bennish.net</title>
+
+<meta name="author" content="Ben Kennish" />
+<meta name="viewport" content="initial-scale=1" />
+<meta name="description" content="A test page for HTML5 Web Notifications - small boxes that pop-up to notify you of activity even if you don't have your web browser as the active window" />
+
+
+<link rel="shortcut icon" href="/favicon.ico" />
+<style type="text/css">
+@import url(//fonts.googleapis.com/css?family=Source+Sans+Pro:400,700);
+
+body
+{
+    font-family: 'Source Sans Pro', 'Segoe UI', 'Helvetica Neue', 'Helvetica', 'Bitstream Vera Sans', 'Verdana', sans-serif;
+    font-size: 100%;
+    background-color: #186781;
+}
+
+div.main
+{
+    /* centered div */
+    margin: 20px auto;
+    padding: 15px 1.8%;
+
+    min-width: 50px;
+    max-width: 800px;
+
+    border: 1px solid #101010;
+    border-radius: 8px;
+
+    /* first try white background, then a slightly transparent white */
+    background-color: #FFFFFF;
+    background-color: rgba(255, 255, 255, 0.9);
+
+    /* first try is a solid grey shadow, second is a semi-transparent black */
+    box-shadow: 10px 10px 5px #999999;
+    box-shadow: 10px 10px 5px rgba(0, 0, 0, 0.5);
+}
+
+h1
+{
+    color: #186781;
+    text-shadow: 1px 1px black;
+    margin-bottom: 0px;
+}
+
+a:link    { text-decoration: none; color: #0000CC; }
+a:visited { color: #0000AA; }
+a:hover   { color: #0000FF; }
+a:active  {  }
+
+img#headerImage
+{
+    /* 90% of the width of the parent container */
+    max-width: 90%;
+    /* 40% of the height of the viewport */
+    max-height: 40vh;
+}
+
+.obfuscationJunk
+{
+    display: none
+}
+
+ul.contact li
+{
+    margin-top: 8px;
+    margin-bottom: 8px;
+}
+</style>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-48376594-4"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-48376594-4');
+</script>
+
+</head>
+<body>
+
+<div class="main">
+<a href="/"><div style="text-align: center;">
+    <h1>Ben<span style='color: #989898; text-decoration: line-through; word-spacing: -2px;'>&nbsp;Ken</span>nish's Web&nbsp;Site</h1>
+    <div style="font-family: monospace;">(www.bennish.net)</div>
+    <!-- <div><img alt="Ben Kennish" src="//www.gravatar.com/avatar/c8da7453f085b3b5037c3040c554749f.png" /></div> --> 
+</div></a>
+<style type="text/css">
+    #console { background-color: #ddd; min-width: 300px; max-width: 750px; height: 300px; border: 1px dotted black; }
+</style>
+
+<script type="text/javascript">
+window.onload = function() {
+    window.notify = {
+        list: [],
+        id: 0,
+        log: function(msg) {
+            var console = document.getElementById('console');
+            console.innerHTML += ("\n"+msg);
+            console.scrollTop = console.scrollHeight;
+        },
+        compatible: function() {
+            if (typeof Notification === 'undefined') {
+                notify.log("Notifications are not available for your browser.");
+                return false;
+            }
+            return true;
+        },
+        authorize: function() {
+            if (notify.compatible()) {
+                Notification.requestPermission(function(permission) {
+                    notify.log("Permission to display: "+permission);
+                });
+            }
+        },
+        showDelayed: function(seconds) {
+            notify.log("A notification will be triggered in "+seconds+" seconds. Try minimising the browser now.");
+            setTimeout(notify.show, (seconds*1000));
+        },
+        show: function() {
+
+            if (typeof Notification === 'undefined') { notify.log("Notifications are not available for your browser."); return; }
+            if (notify.compatible()) {
+                notify.id++;
+                var id = notify.id;
+                notify.list[id] = new Notification("Notification #"+id, {
+                    body: "This is the text body of the notification. \nPretty cool, huh?",
+                    tag: id,
+                    icon: "images/Sexy_Ben.jpeg",
+                    lang: "",
+                    dir: "auto",
+                });
+                notify.log("Notification #"+id+" queued for display");
+                notify.list[id].onclick = function() { notify.logEvent(id, "clicked"); };
+                notify.list[id].onshow  = function() { notify.logEvent(id, "showed");  };
+                notify.list[id].onerror = function() { notify.logEvent(id, "errored"); };
+                notify.list[id].onclose = function() { notify.logEvent(id, "closed");  };
+
+                console.log("Created a new notification ...");
+                console.log(notify.list[id]);
+            }
+        },
+        logEvent: function(id, event) {
+            notify.log("Notification #"+id+" "+event);
+        }
+    };
+};
+</script>
+
+<h2>HTML5 Web Notifications Test</h2>
+
+<p>This is a page to help you to test your browser's support for HTML5 Web Notifications.</p>
+
+<p>At the time of writing, they are supported by the latest versions of Firefox (v22), Chrome (v27) and Safari (v6.0.5).</p>
+
+<p>You can find the <a href="http://www.w3.org">W3C</a> Recommendation of the spec here:</p>
+
+<ul>
+    <li><a href="http://www.w3.org/TR/notifications/">Web Notifications - W3C Recommendation - 22 October 2015</a></li>
+</ul>
+
+<p>
+<button onclick="notify.authorize()">Authorize</button>
+<button onclick="notify.show()">Show</button>
+<button onclick="notify.showDelayed(5)">Show&nbsp;in&nbsp;5s</button>
+<!-- TODO : add a button that shows a notification using a 'tag' -->
+</p>
+
+<textarea id="console" readonly>This is the output console.
+Text will appear here when stuff happens.
+------------------</textarea>
+
+<p>Thanks to <a href="http://stv.whtly.com">Steve Whitely</a> for his pro JS skillz.</p>
+
+
+<p>© <a href="https://www.bennish.net/">Ben Kennish</a>, 2022</p>
+
+</div>
+
+<script type="text/javascript" src="/js/awstats_misc_tracker.js"></script>
+<noscript><img src="/js/awstats_misc_tracker.js?nojs=y" alt="AWStats" height=0 width=0 style="display: none; border: 0;"></noscript>
+
+</body>
+</html>
