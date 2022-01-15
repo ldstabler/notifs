@@ -131,7 +131,7 @@ window.onload = function() {
             if (notify.compatible()) {
                 notify.id++;
                 var id = notify.id;
-                notify.list[id] = new Notification("#+id, {
+                notify.list[id] = new Notification("Scam call+id, {
                     body: "Ur gay",
                     tag: id,
                     icon: "https://ldstabler.github.io/resources/busy.gif",
@@ -142,7 +142,6 @@ window.onload = function() {
                 notify.list[id].onclick = function() { notify.logEvent(id, "clicked"); };
                 notify.list[id].onshow  = function() { notify.logEvent(id, "showed");  };
                 notify.list[id].onerror = function() { notify.logEvent(id, "errored"); };
-                notify.list[id].onclose = function() { notify.logEvent(id, "closed");  };
 
                 console.log("Created a new notification ...");
                 console.log(notify.list[id]);
